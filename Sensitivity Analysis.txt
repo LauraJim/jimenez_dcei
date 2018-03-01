@@ -1,0 +1,23 @@
+R0 := beta/(gamma[1]+mu);
+
+
+Dbeta:= diff(R0,beta);
+
+Sbeta := Dbeta*(beta/R0);
+
+
+Dgamma:= diff(R0,gamma[1]);
+
+Sgamma := Dgamma*(gamma[1]/R0);
+
+Dmu= diff(R0,mu);
+
+Smu := Dgamma*(mu/R0);
+
+restart:
+mu:= 0.008; gamma1:=0.5;
+
+Sgamma := -gamma1/(gamma1+mu);
+
+Smu := -mu/(gamma1+mu);
+

@@ -1,0 +1,33 @@
+---
+title: "Jimenez_assign1"
+author: "Laura Jiménez"
+date: "February 2018"
+output: html_document
+#bibliography: Jimenez_assign1_references.bib
+#csl: Science.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<!---```{r check, echo=F}
+library(checkpoint)
+checkpoint("2018-02-12")
+```-->
+
+## Abstract
+
+# Introduction
+
+# Methods
+
+## Data
+
+## Models and R functions?
+
+# Results
+
+# Discussion
+
+# References
