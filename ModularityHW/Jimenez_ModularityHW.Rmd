@@ -19,14 +19,34 @@ checkpoint("2018-02-12")
 ## Abstract
 
 # Introduction
+Use first research question as main idea:
+1) Can we see climate warming for ourselves by analysing these data?
 
 # Methods
 
 ## Data
+-
+```{r data, cache=T,cache.extra=list(mtime(".rds")),include=F}
+temp <- readRDS(".rds",header=T)
+prec <- readRDS(".rds",header=T)
+str(temp)
+str(prec)
+```
 
 ## Models and R functions?
 
+```{r cleaning}
+# follow steps 1-3 in the HW guide
+```
+
+```{r mapData}
+# showing the temp and prec trends in each location (maps package)
+```
+
 # Results
+Answer the research questions:
+2) In what parts of the country are temperatures getting warmer? Are there any parts that actually got colder over 1905-2010?
+3) Can we say, based on these data, that a change in precipitation has occurred over this period?
 
 # Discussion
 
