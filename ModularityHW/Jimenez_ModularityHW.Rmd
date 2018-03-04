@@ -35,6 +35,9 @@ Use first research question as main idea:
 ## Data
 -
 ```{r data, cache=T,cache.extra=list(mtime(c("USAAnnualPcpn1950_2008.rds","USAAnnualTemp1950_2008.rds"))}
+# Check if you really need to use the mtime function
+
+# provided == T, if the data are stored in the same directory as .rds files, and ==F, if the data will be downloaded from a website
 provided <- T
 files <- c("USAAnnualPcpn1950_2008.rds","USAAnnualTemp1950_2008.rds")
 if(provided==T)
@@ -44,14 +47,15 @@ if(provided==T)
 }
 str(temp)
 str(prec)
-range(temp$year)
-range(prec$year)
+#range(temp$year)
+#range(prec$year)
 ```
 
 ## Models and R functions?
 
 ```{r cleaning}
 # follow steps 1-3 in the HW guide
+aggregate(temp,by=list(temp$lat,temp$lon),FUN =mean,na.rm=T)
 ```
 
 ```{r mapData}
