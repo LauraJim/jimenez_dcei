@@ -1,20 +1,28 @@
 ---
-title: "Jimenez_assign1"
+title: "Jimenez_ModularityHW"
 author: "Laura Jiménez"
-date: "February 2018"
+date: "March 2018"
 output: html_document
 #bibliography: Jimenez_assign1_references.bib
 #csl: Science.csl
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=F}
+knitr::opts_chunk$set(echo = F,include=F)
 ```
 
 <!---```{r check, echo=F}
 library(checkpoint)
 checkpoint("2018-02-12")
 ```-->
+
+
+```{r Funmtime}
+mtime <- function(files)
+{
+  lapply(Sys.glob(files),function(x) {X = file.info(x)$mtime})
+}
+```
 
 ## Abstract
 
@@ -26,11 +34,18 @@ Use first research question as main idea:
 
 ## Data
 -
-```{r data, cache=T,cache.extra=list(mtime(".rds")),include=F}
-temp <- readRDS(".rds",header=T)
-prec <- readRDS(".rds",header=T)
+```{r data, cache=T,cache.extra=list(mtime(c("USAAnnualPcpn1950_2008.rds","USAAnnualTemp1950_2008.rds"))}
+provided <- T
+files <- c("USAAnnualPcpn1950_2008.rds","USAAnnualTemp1950_2008.rds")
+if(provided==T)
+{
+  temp <- readRDS(files[1])
+  prec <- readRDS(files[2])
+}
 str(temp)
 str(prec)
+range(temp$year)
+range(prec$year)
 ```
 
 ## Models and R functions?
