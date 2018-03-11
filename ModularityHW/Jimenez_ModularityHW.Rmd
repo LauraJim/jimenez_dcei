@@ -35,8 +35,6 @@ Here we analyze the spatial and temporal characteristics of change in annual mea
 ## Data
 -
 ```{r data, cache=T, cache.extra=list(mtime("USAAnnualTemp1950_2008.rds"),mtime("USAAnnualPcpn1950_2008.rds"))}
-# Check if you really need to use the mtime function or try to use cache.extra in a different way, see class March 6
-
 # provided == T, if data are stored in the same directory as the code
 # provided == F, if the data will be downloaded from a website
 provided <- T
@@ -54,17 +52,29 @@ str(prec)
 ## Models and R functions?
 
 ```{r cleaning, cache=T}
-# follow steps 1-3 in the HW guide
-nyear <- length(unique(temp$year))
-# Filtering data by weather station name and removing NA's
-filter1 <- aggregate(data~name,temp,length,na.action = na.omit)
-# Removing the weather stations with less than "minY" years of data
-minY <- 40
-filter2 <- subset(filter1,filter1$data >= minY)$name
-# Select only the stations in filter2
-filter3 <- subset(temp,subset=temp$name%in%filter2,selec=c(lon,lat,data,year))
-mclean <- matrix(as.vector(filter3$data),nrow=nyear)
-mclean[1:8,1:8]
+# Function that gets rid of stations with less than a minimum number of observations and transform the data to a matrix
+# 'dats' must be a data frame object with the following variables: state, name, lon, lat, data, year
+# 'minY' is the minimum number of years that a station must contain to be included in the final dataset
+# Output: a matrix with the cleaned data
+cleanTP <- function(dats,minY)
+{
+  nyear <- length(unique(dats$year))
+  # Filtering data by weather station name and removing NA's
+  filter1 <- aggregate(data~name,dats,length,na.action = na.omit)
+  # Removing the weather stations with less than "minY" years of data
+  filter2 <- subset(filter1,filter1$data >= minY)$name
+  # Select only the stations in filter2
+  filter3 <- subset(dats,subset=dats$name%in%filter2,selec=c(lon,lat,data,year))
+  mclean <- matrix(as.vector(filter3$data),nrow=nyear)
+  lonlat <- cbind(filter3$lon,filter3$lat)
+  return(list(mclean,lonlat))
+}
+
+# Now use the function for cleaning both the temperature and the precipitation datasets:
+temp.cl <- cleanTP(temp,40)
+temp.cl[[1]][1:8,1:8]
+prec.cl <- cleanTP(prec,40)
+prec.cl[[1]][1:8,1:8]
 ```
 
 Figure X shows the locations if the n1 temperature and n2 precipitation stations used in this study. Remember that we got rid of the stations with less than 40 years of data.
@@ -74,7 +84,7 @@ library(maps)
 # map of the USA with state divisions
 map('state', fill = F)
 # extract the unique coordinate pairs from filter3 to plot the stations
-sts <- cbind(filter3$lon[nrow(mclean)*(1:ncol(mclean))],filter3$lat[nrow(mclean)*(1:ncol(mclean))])
+sts <- temp.cl[[2]][nrow(temp.cl[[1]])*(1:ncol(temp.cl[[1]])),]
 # show location of stations
 points(sts,pch=19,col="orange")
 # now color the points according to the temp or prec measurements
