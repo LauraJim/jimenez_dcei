@@ -11,9 +11,10 @@ output: html_document
 knitr::opts_chunk$set(echo = F)
 ```
 
-<!---```{r check, echo=F}
+<!---```{r check, echo=F, cache=T, message=F, warning=F}
 library(checkpoint)
-checkpoint("2018-02-12")
+dir.create(file.path(tempdir(),".checkpoint"),recursive=T,showwarnings=F)
+checkpoint("2018-03-14",checkpointLocation=tempdir())
 ```-->
 
 ```{r Funmtime}
@@ -26,6 +27,7 @@ mtime <- function(files)
 ## Abstract
 
 # Introduction
+Understanding the observed climate trends for the United States in terms of regional characteristics and hemispheric perspectives is importan to assess regional changes and to understand further the global climate system. Further, the anthropogenic climate change signal is projected to be stronger in the high-latitudes (Nicholls et al., 1996). This suggests that it might be easier to detect climate change in a country like the USA.
 Use first research question as main idea:
 1) Can we see climate warming for ourselves by analysing these data?
 An important aspect in climate change research is the study of change weather and climate extremes...
