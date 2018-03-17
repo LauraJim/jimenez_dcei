@@ -18,25 +18,27 @@ checkpoint("2018-03-14",checkpointLocation=tempdir())
 ```-->
 
 ```{r extra-code}
+# used in chunk "data"
 mtime <- function(files)
 {
   lapply(Sys.glob(files),function(x) {X = file.info(x)$mtime})
 }
-
+# used in chunk "map-trend-temp" and "map-trend-prec"
 library(maps)
+# used in chunk "data" when 'previded=F'
+source(acisedf_jimenez.R)
 ```
 
 ## Abstract
 
 # Introduction
 Understanding the observed climate trends for the United States in terms of regional characteristics and hemispheric perspectives is important to assess regional changes and to understand further the global climate system. Further, the anthropogenic climate change signal is projected to be stronger in the high-latitudes [@nicholls1996; @Zhang2000; @Jones1999]. This suggests that it might be easier to detect climate change in a country like the United States of America.  
-In this work we analyze climate data from weather stations all around the USA to see if we can detect climate warming. We aim to detect the spatial and temporal characteristics of change in annual mean temperature and annual mean precipitation across the United States along the period 1950-2016.  
+In this work we analyze climate data from weather stations all around the USA to see if we can detect climate warming. We aim to detect the spatial and temporal characteristics of change in annual mean temperature and annual mean precipitation across the United States along the period $1950-2016$.  
 
 # Methods
 
 ## Data
 We obtained measurements for temperature (in Farenheit scale) and precipitation (in milimeters?) from weather stations placed along the USA managed by the Applied Climate Information System which can be downloaded from their website [ACIS](http://builder.rcc-acis.org/). For temperature, we got annual means for all the weather stations from $1950$ to $2016$. The precipitaion data are also annual means during the same period but we only considered three states: Alabama, Ohio and Tennessee.
-Ideally, the period $1950-2016$ includes $67$ observations for each weather station, however, not all these observations were actually stored in the database. Thus, there are a lot of missing values in the raw datasets that we needed to clean. We set a threshold of $40$ observations per weather station, so that stations with less that $40$ years of data were left out of the analysis. After removing those stations, we ended up with $4251$ stations with enough temperature measurements and $341$ stations with enough precipitation measurements.
 
 <!--- Chunk for reading data, you need to give file names and set 'provided'. Dependencies: mtime --->
 ```{r data, cache=T, cache.extra=list(mtime("USAAnnualTemp1950_2008.rds"),mtime("USAAnnualPcpn1950_2008.rds"))}
@@ -44,16 +46,45 @@ Ideally, the period $1950-2016$ includes $67$ observations for each weather stat
 # provided == F, if the data will be downloaded from a website
 provided <- T
 files <- c("USAAnnualTemp1950_2008.rds","USAAnnualPcpn1950_2008.rds")
-if(provided==T)
-{
+if(provided){
   temp <- readRDS(files[1])
   prec <- readRDS(files[2])
+  # both files should be data.frame objects
+} else{
+# Apply function for temperature
+res1 <- acis2dfpcpn(sdate="19500101", edate="20161231", states=state.abb, elem=1)
+fname1 <- paste0("data/USAannualTemp",sdate,"_", edate,".rds")
+saveRDS(res1, file=fname1)
+
+# Apply function for temperature
+res2 <- acis2dfpcpn(sdate="19500101", edate="20161231", states=state.abb, elem=2)
+fname2 <- paste0("data/USAannualPcpn",sdate,"_", edate,".rds")
+saveRDS(res2, file=fname2)
+
+####
+lf <- list.files(pattern="20161231$", path="data/", full.names = T)
+temp <- data.frame()
+for(i in lf[2]){
+  tmp <- readRDS(i)
+  tmp2 <- reshape2::melt(tmp, id.vars="year")
+  temp <- rbind(temp, tmp2)
 }
-# both files should be data.frame objects
+temp <- temp[!temp$variable=="NA.",]
+grid <- strsplit(as.character(temp$variable), ",")
+latff <- sapply(grid,"[",2)
+temp$lat <- as.numeric(gsub(x=latff, replacement = "",pattern=" |)"))
+lonff <- sapply(grid,"[",1)
+temp$lon <- as.numeric(sub("\\D+","",lonff))*-1
+temp$state <- substr(temp$variable,1,2)
+library(qdapRegex)
+temp$name <- unlist(rm_between(text.var =lonff, left = "_", right="_", extract=TRUE))
+                  
+saveRDS(temp, "../ModularityHW/USAannualTemp1950_2016.rds")
+}
 ```
 
 <!--- Chunk for cleaning data, you need to set 'minY' when using the function. Dependencies: temp,prec --->
-```{r cleaning, cache=T}
+```{r cleaning, cache=T, include=F}
 # Function that gets rid of stations with less than a minimum number of observations and transform the data to a matrix
 # 'dats' must be a data frame object with the following variables: state, name, lon, lat, data, year
 # 'minY' is the minimum number of years that a station must contain to be included in the final dataset
@@ -75,7 +106,8 @@ cleanTP <- function(dats,minY)
 }
 
 # Now use the function for cleaning both the temperature and the precipitation datasets:
-temp.cl <- cleanTP(dats=temp,minY=40)
+miny <- 40
+temp.cl <- cleanTP(dats=temp,minY=miny)
 temp.obs <- temp.cl[[1]]
 temp.obs[1:8,1:8]
 dim(temp.obs)
@@ -84,6 +116,8 @@ prec.obs <- prec.cl[[1]]
 prec.obs[1:8,1:8]
 dim(prec.obs)
 ```
+
+Ideally, the period $1950-2016$ includes $67$ observations for each weather station, however, not all these observations were actually stored in the database. Thus, there are a lot of missing values in the raw datasets that we needed to clean. We set a threshold of `r miny` observations per weather station, so that stations with less that `r miny` years of data were left out of the analysis. After removing those stations, we ended up with `r ncol(temp.obs)` stations with enough temperature measurements and `r ncol(prec.obs)` stations with enough precipitation measurements.
 
 ## Environmental trends
 Some non-parametric tests were developed for assesing environmental impacts because scientists were concerned that the statistical features of messy environmental data would make difficult to use parametric procedures [@Hipel1994; @Haylock2006]. Temperature and precipitation time series may contain one or more of a number of properties which are undesirable for use with parametric tests. Moreover, data are censored or or the time series contain a lot of missing values. We used a nonparametric test which is designed for checking for the presence of a trend that may be contained in the data. So, the outputs may not give an indication of the type or magnitude of the trend. Here, we used the Mann-Kendall trend test which is a special case of the Kendall rank correlation test [@Hipel1994].  
@@ -132,14 +166,11 @@ plot(ys[2,1]:ys[2,2],prec.obs[,1],type="l",las=2,xlab="Year",ylab="Annual precip
     lines(ys[2,1]:ys[2,2],prec.obs[,i],col="green")
 ```
 
-After applying the Mann-Kendall test for all the time series, i.e. for each weather station, we looked at the p-values and classified the values of the scores into three categories: significant negative trend (identified with a value of -1), non-significant trend (0), and significant positive trend (1). The following table shows the number of stations in each class for the temperature data:
-`r table(tscores)`
-where we can see that more than half of the stations showed a positive trend. The corresponding table for precipitation is
-`r table(pscores)`
-where also positive trends are common.
+After applying the Mann-Kendall test for all the time series, i.e. for each weather station, we looked at the p-values and classified the values of the scores into three categories: significant negative trend (identified with a value of -1), non-significant trend (0), and significant positive trend (1). The number of stations in each class for the temperature data are: `r table(tscores)`, we can see that more than half of the stations showed a positive trend. The corresponding frequencies for precipitation data are: `r table(pscores)`, where also positive trends are common.
+Figure 2 shows the locations of the weather stations that were included in the trend analysis for temperature data. Each point has a color which is assotiated to the result of the Mann-Kendall test: blue points correspont to positive trens (score=1), yellow points have no trend (score=0) and pink points correspond to negative trends (score=-1). It is clear that more weather stations located in the east side of the country were included in the analysis. From these east stations, we can see a mixture of positive and negative trends in the times series, while for west stations positive trends are more abundant. Thus, its seems that in the west side the temperature along the period $1950-2016$ has increased.
 
 <!--- Chunk for plotting the temperature scores from the Mann-Kendall test for all stations. Dependencies: tscores,temp.cl,library maps --->
-```{r map-trends, dev='png', fig.cap="Figure 2. Map of the USA with the location of weather stations. Blue points represent stations were there is a significant positive trend in the temperature time series. Yellow points are stations with no significant trend and red points correspont to stations were a negative trend was found."}
+```{r map-trend-temp, dev='png', fig.cap="Figure 2. Map of the USA with the location of weather stations. Blue points represent stations were there is a significant positive trend in the temperature time series. Yellow points are stations with no significant trend and pink points correspont to stations were a negative trend was found."}
 # extract the unique coordinate pairs to plot the stations
 temp.sts <- temp.cl[[2]][nrow(temp.obs)*(1:ncol(temp.obs)),]
 # plot points at the locations of the stations and color the points according to the score values
@@ -147,16 +178,17 @@ temp.sts <- temp.cl[[2]][nrow(temp.obs)*(1:ncol(temp.obs)),]
 map('state', fill = F)
   title("Temperature")
   # positive trends
-  points(temp.sts[which(tscores==1),],pch=20,col="blue")
+  points(temp.sts[which(tscores==1),],pch=20,col="turquoise2")
   # no trends
   points(temp.sts[which(tscores==0),],pch=20,col="yellow")
   # negative trends
-  points(temp.sts[which(tscores==-1),],pch=20,col="red")
+  points(temp.sts[which(tscores==-1),],pch=20,col="magenta")
 
 ```
 
+Similarly, Figure 3 shows the locations of the weather stations that were included in the trend analysis for precipitation data. The three states included in the analysis seem to be  well covered by the weather stations that we kept after cleaning the data. Most of the time series in these states show a positive trend in precipitation, meaning that there is a statistically significant increase in precipitation during the period $1950-2016$.
 <!--- Chunk for plotting the precipitation scores from the Mann-Kendall test for all stations. Dependencies: pscores,prec.cl,library maps --->
-```{r map-trends, dev='png', fig.cap="Figure 3. Map of the USA with the location of weather stations. Blue points represent stations were there is a significant positive trend in the precipitation time series. Yellow points are stations with no significant trend and red points correspont to stations were a negative trend was found."}
+```{r map-trend-prec, dev='png', fig.cap="Figure 3. Map of the USA with the location of weather stations. Blue points represent stations were there is a significant positive trend in the precipitation time series. Yellow points are stations with no significant trend and pink points correspont to stations were a negative trend was found."}
 # extract the unique coordinate pairs to plot the stations
 prec.sts <- prec.cl[[2]][nrow(prec.obs)*(1:ncol(prec.obs)),]
 # plot points at the locations of the stations and color the points according to the score values
@@ -164,17 +196,12 @@ prec.sts <- prec.cl[[2]][nrow(prec.obs)*(1:ncol(prec.obs)),]
 map('state', fill = F, region=c("alabama","ohio","tennessee"))
   title("Precipitation")
   # positive trends
-  points(prec.sts[which(pscores==1),],pch=19,col="blue")
+  points(prec.sts[which(pscores==1),],pch=19,col="turquoise2")
   # no trends
   points(prec.sts[which(pscores==0),],pch=19,col="yellow")
   # negative trends
-  points(prec.sts[which(pscores==-1),],pch=19,col="red")
+  points(prec.sts[which(pscores==-1),],pch=19,col="magenta")
 ```
-
-Answer the research questions:
-2) In what parts of the country are temperatures getting warmer? Are there any parts that actually got colder over 1905-2010?
-3) Can we say, based on these data, that a change in precipitation has occurred over this period?
-Figure X shows the locations if the n1 temperature and n2 precipitation stations used in this study. Remember that we got rid of the stations with less than 40 years of data.
 
 # Discussion
 
