@@ -1,10 +1,11 @@
 ---
-title: "Jimenez_ModularityHW"
+title: "Changes in temperature and precipitation over the past 60 years in the USA"
 author: "Laura Jiménez"
 date: "March 2018"
 output: html_document
 bibliography: ModularityHW_refs.bib
 csl: Science.csl
+fontsize: 11pt
 ---
 
 ```{r setup, include=F}
@@ -26,7 +27,7 @@ mtime <- function(files)
 # used in chunk "map-trend-temp" and "map-trend-prec"
 library(maps)
 # used in chunk "data" when 'previded=F'
-source(acisedf_jimenez.R)
+source("acis2df_jimenez.R")
 ```
 
 ## Abstract
@@ -38,6 +39,7 @@ In this work we analyze climate data from weather stations all around the USA to
 # Methods
 
 ## Data
+
 We obtained measurements for temperature (in Farenheit scale) and precipitation (in milimeters?) from weather stations placed along the USA managed by the Applied Climate Information System which can be downloaded from their website [ACIS](http://builder.rcc-acis.org/). For temperature, we got annual means for all the weather stations from $1950$ to $2016$. The precipitaion data are also annual means during the same period but we only considered three states: Alabama, Ohio and Tennessee.
 
 <!--- Chunk for reading data, you need to give file names and set 'provided'. Dependencies: mtime --->
@@ -51,36 +53,37 @@ if(provided){
   prec <- readRDS(files[2])
   # both files should be data.frame objects
 } else{
-# Apply function for temperature
+# Apply function for downloading temperature data
 res1 <- acis2dfpcpn(sdate="19500101", edate="20161231", states=state.abb, elem=1)
 fname1 <- paste0("data/USAannualTemp",sdate,"_", edate,".rds")
 saveRDS(res1, file=fname1)
 
-# Apply function for temperature
-res2 <- acis2dfpcpn(sdate="19500101", edate="20161231", states=state.abb, elem=2)
+# Apply function for downloading precipitation data
+res2 <- acis2dfpcpn(sdate="19500101", edate="20161231", states=c("AL","OH","TN"), elem=2)
 fname2 <- paste0("data/USAannualPcpn",sdate,"_", edate,".rds")
 saveRDS(res2, file=fname2)
 
+# #### Formating the downloaded data
+# lf <- list.files(pattern="20161231$", path="data/", full.names = T)
+# temp <- data.frame()
+# for(i in lf[2]){
+#   tmp <- readRDS(i)
+#   tmp2 <- reshape2::melt(tmp, id.vars="year")
+#   temp <- rbind(temp, tmp2)
+# }
+# temp <- temp[!temp$variable=="NA.",]
+# grid <- strsplit(as.character(temp$variable), ",")
+# latff <- sapply(grid,"[",2)
+# temp$lat <- as.numeric(gsub(x=latff, replacement = "",pattern=" |)"))
+# lonff <- sapply(grid,"[",1)
+# temp$lon <- as.numeric(sub("\\D+","",lonff))*-1
+# temp$state <- substr(temp$variable,1,2)
+# library(qdapRegex)
+# temp$name <- unlist(rm_between(text.var =lonff, left = "_", right="_", extract=TRUE))
+#                   
+# saveRDS(temp, "../ModularityHW/USAannualTemp1950_2016.rds")
+}
 ####
-lf <- list.files(pattern="20161231$", path="data/", full.names = T)
-temp <- data.frame()
-for(i in lf[2]){
-  tmp <- readRDS(i)
-  tmp2 <- reshape2::melt(tmp, id.vars="year")
-  temp <- rbind(temp, tmp2)
-}
-temp <- temp[!temp$variable=="NA.",]
-grid <- strsplit(as.character(temp$variable), ",")
-latff <- sapply(grid,"[",2)
-temp$lat <- as.numeric(gsub(x=latff, replacement = "",pattern=" |)"))
-lonff <- sapply(grid,"[",1)
-temp$lon <- as.numeric(sub("\\D+","",lonff))*-1
-temp$state <- substr(temp$variable,1,2)
-library(qdapRegex)
-temp$name <- unlist(rm_between(text.var =lonff, left = "_", right="_", extract=TRUE))
-                  
-saveRDS(temp, "../ModularityHW/USAannualTemp1950_2016.rds")
-}
 ```
 
 <!--- Chunk for cleaning data, you need to set 'minY' when using the function. Dependencies: temp,prec --->
@@ -120,6 +123,7 @@ dim(prec.obs)
 Ideally, the period $1950-2016$ includes $67$ observations for each weather station, however, not all these observations were actually stored in the database. Thus, there are a lot of missing values in the raw datasets that we needed to clean. We set a threshold of `r miny` observations per weather station, so that stations with less that `r miny` years of data were left out of the analysis. After removing those stations, we ended up with `r ncol(temp.obs)` stations with enough temperature measurements and `r ncol(prec.obs)` stations with enough precipitation measurements.
 
 ## Environmental trends
+
 Some non-parametric tests were developed for assesing environmental impacts because scientists were concerned that the statistical features of messy environmental data would make difficult to use parametric procedures [@Hipel1994; @Haylock2006]. Temperature and precipitation time series may contain one or more of a number of properties which are undesirable for use with parametric tests. Moreover, data are censored or or the time series contain a lot of missing values. We used a nonparametric test which is designed for checking for the presence of a trend that may be contained in the data. So, the outputs may not give an indication of the type or magnitude of the trend. Here, we used the Mann-Kendall trend test which is a special case of the Kendall rank correlation test [@Hipel1994].  
 We aplied a Mann-Kendall test to the temperature and precipitation time series to check for the presence of a trend. The Mann-Kendall test is a nonparametric test for randomness against time, i.e., it cotrasts the null hypothesis that the data come from a population where the random variables are independent and identically distributed against the alternative hypothesis that the data follow a monotonic trend over time. We calculated the values of the Mann-Kendall test statistic, S, under the null hypothesis by using the function 'Kendal' in R. A positive value of S indicates that there is an upward trend in which the observations increase with time. A negative value of S means that there is  downward trend. If the value of S is significantly different from zero, we reject the null hypothesis at a chosen significance level (0.95, in our case) and have evidence of the presence of a monotonic trend.
 
@@ -151,6 +155,7 @@ pscores <- MKapply(prec.obs,alpha = 0.95)
 ```
 
 # Results
+
 Figure 1 shows the time series from a sample of weather stations that we used for the trend analysis. We can not say that there are positive or negative trends in the data just by watching this time series either for temperature or precipitation. However, it is clear that there is more variation in the time series of annual precipitation (bottom, Fig. 1) compared to the time series of annual temperature (top, Fig. 1).
 
 <!--- Chunk for plotting the time series for different stations, you need to choose which subset of time series to plot. Dependencies: temp.cl,temp.obs,prec.cl,prec.obs --->
@@ -204,5 +209,8 @@ map('state', fill = F, region=c("alabama","ohio","tennessee"))
 ```
 
 # Discussion
+
+It is possible that the results described above change if we consider a different set of weather stations in the analysis. Ideally, we would like to have a set of weather stations uniformly distributed along the USA territory. Further, all these stations should be able to record observations for must of the years consired in the period of study but we know that this in not an easy achieve.
+Although the results of this study and the evidence provided by the data are not conclusive, they can guide us on how to design a new study to determine if climate change is indeed afecting more the west side of the country compared to the east side.
 
 # References
