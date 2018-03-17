@@ -7,6 +7,7 @@ for(i in seq_along(states)){
   base.url <- "http://data.rcc-acis.org/MultiStnData?"
   # Temperature: params=%7B%22state%22%3A%22ks%22%2C%22sdate%22%3A%2219500101%22%2C%22edate%22%3A%2220161231%22%2C%22elems%22%3A%22avgt%22%2C%22meta%22%3A%22ll%2Cname%2Cstate%22%7D
   # Precipitation: params=%7B%22state%22%3A%22ks%22%2C%22sdate%22%3A%2219500101%22%2C%22edate%22%3A%2220161231%22%2C%22elems%22%3A%22pcpn%22%2C%22meta%22%3A%22ll%2Cname%2Cstate%22%7D  params1.url <- "params=%7B%22state%22%3A%22"
+  params1.url <- "params=%7B%22state%22%3A%22"
   params2.url <- "%22%2C%22sdate%22%3A%22"
   params3.url <- "%22%2C%22edate%22%3A%22"
   params4.url <- "%22%2C%22elems%22%3A%22"
