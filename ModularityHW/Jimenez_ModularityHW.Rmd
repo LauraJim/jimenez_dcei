@@ -3,8 +3,8 @@ title: "Jimenez_ModularityHW"
 author: "Laura Jiménez"
 date: "March 2018"
 output: html_document
-#bibliography: ModularityHW_refs.bib
-#csl: Science.csl
+bibliography: ModularityHW_refs.bib
+csl: Science.csl
 ---
 
 ```{r setup, include=F}
@@ -17,25 +17,28 @@ dir.create(file.path(tempdir(),".checkpoint"),recursive=T,showwarnings=F)
 checkpoint("2018-03-14",checkpointLocation=tempdir())
 ```-->
 
-```{r Funmtime}
+```{r extra-code}
 mtime <- function(files)
 {
   lapply(Sys.glob(files),function(x) {X = file.info(x)$mtime})
 }
+
+library(maps)
 ```
 
 ## Abstract
 
 # Introduction
-Understanding the observed climate trends for the United States in terms of regional characteristics and hemispheric perspectives is important to assess regional changes and to understand further the global climate system. Further, the anthropogenic climate change signal is projected to be stronger in the high-latitudes (Nicholls et al., 1996). This suggests that it might be easier to detect climate change in a country like the United States of America.  
+Understanding the observed climate trends for the United States in terms of regional characteristics and hemispheric perspectives is important to assess regional changes and to understand further the global climate system. Further, the anthropogenic climate change signal is projected to be stronger in the high-latitudes [@nicholls1996; @Zhang2000; @Jones1999]. This suggests that it might be easier to detect climate change in a country like the United States of America.  
 In this work we analyze climate data from weather stations all around the USA to see if we can detect climate warming. We aim to detect the spatial and temporal characteristics of change in annual mean temperature and annual mean precipitation across the United States along the period 1950-2016.  
 
 # Methods
 
 ## Data
-We obtained measurements for temperature and precipitation from weather stations placed along the USA managed by the Applied Climate Information System which can be downloaded from their website [ACIS](http://builder.rcc-acis.org/). For temperature, we got annual means for all the weather stations from $1950$ to $2016$. The precipitaion data are also annual means during the same period but we only considered three states: Alabama, Ohio and Tennessee.
+We obtained measurements for temperature (in Farenheit scale) and precipitation (in milimeters?) from weather stations placed along the USA managed by the Applied Climate Information System which can be downloaded from their website [ACIS](http://builder.rcc-acis.org/). For temperature, we got annual means for all the weather stations from $1950$ to $2016$. The precipitaion data are also annual means during the same period but we only considered three states: Alabama, Ohio and Tennessee.
 Ideally, the period $1950-2016$ includes $67$ observations for each weather station, however, not all these observations were actually stored in the database. Thus, there are a lot of missing values in the raw datasets that we needed to clean. We set a threshold of $40$ observations per weather station, so that stations with less that $40$ years of data were left out of the analysis. After removing those stations, we ended up with $4251$ stations with enough temperature measurements and $341$ stations with enough precipitation measurements.
 
+<!--- Chunk for reading data, you need to give file names and set 'provided'. Dependencies: mtime --->
 ```{r data, cache=T, cache.extra=list(mtime("USAAnnualTemp1950_2008.rds"),mtime("USAAnnualPcpn1950_2008.rds"))}
 # provided == T, if data are stored in the same directory as the code
 # provided == F, if the data will be downloaded from a website
@@ -47,10 +50,9 @@ if(provided==T)
   prec <- readRDS(files[2])
 }
 # both files should be data.frame objects
-str(temp)
-str(prec)
 ```
 
+<!--- Chunk for cleaning data, you need to set 'minY' when using the function. Dependencies: temp,prec --->
 ```{r cleaning, cache=T}
 # Function that gets rid of stations with less than a minimum number of observations and transform the data to a matrix
 # 'dats' must be a data frame object with the following variables: state, name, lon, lat, data, year
@@ -73,7 +75,7 @@ cleanTP <- function(dats,minY)
 }
 
 # Now use the function for cleaning both the temperature and the precipitation datasets:
-temp.cl <- cleanTP(temp,40)
+temp.cl <- cleanTP(dats=temp,minY=40)
 temp.obs <- temp.cl[[1]]
 temp.obs[1:8,1:8]
 dim(temp.obs)
@@ -83,28 +85,14 @@ prec.obs[1:8,1:8]
 dim(prec.obs)
 ```
 
-Figure X shows the locations if the n1 temperature and n2 precipitation stations used in this study. Remember that we got rid of the stations with less than 40 years of data.
-```{r mapstations, eval=F}
-# showing the temp and prec trends in each location (maps package)
-library(maps)
-# map of the USA with state divisions
-map('state', fill = F)
-# extract the unique coordinate pairs from filter3 to plot the stations
-temp.sts <- temp.cl[[2]][nrow(temp.obs)*(1:ncol(temp.obs)),]
-prec.sts <- prec.cl[[2]][nrow(prec.obs)*(1:ncol(prec.obs)),]
-# show location of stations
-points(temp.sts,pch=19,col="orange")
-points(prec.sts,pch=19,col="blue")
-# now color the points according to the temp or prec measurements
-
-```
-
 ## Environmental trends
-Non-parametric test were developed for use in environmental impact assesment because scientists were concerned that the statistical features of messy environmental data would make difficult to use parametric procedures (references). Temperature and precipitation time series may contain one or more of a number of properties which are undesirable for use with parametric tests. Moreover, data are censored or or the time series contain a lot of missing values. We used a nonparametric test which is designed for checking for the presence of a trend that may be contained in the data. So, the outputs may not give an indication of the type or magnitude of the trend. Here, we used the Mann-Kendall trend test which is a special case of the Kendall rank correlation test (reference).  
+Some non-parametric tests were developed for assesing environmental impacts because scientists were concerned that the statistical features of messy environmental data would make difficult to use parametric procedures [@Hipel1994; @Haylock2006]. Temperature and precipitation time series may contain one or more of a number of properties which are undesirable for use with parametric tests. Moreover, data are censored or or the time series contain a lot of missing values. We used a nonparametric test which is designed for checking for the presence of a trend that may be contained in the data. So, the outputs may not give an indication of the type or magnitude of the trend. Here, we used the Mann-Kendall trend test which is a special case of the Kendall rank correlation test [@Hipel1994].  
 We aplied a Mann-Kendall test to the temperature and precipitation time series to check for the presence of a trend. The Mann-Kendall test is a nonparametric test for randomness against time, i.e., it cotrasts the null hypothesis that the data come from a population where the random variables are independent and identically distributed against the alternative hypothesis that the data follow a monotonic trend over time. We calculated the values of the Mann-Kendall test statistic, S, under the null hypothesis by using the function 'Kendal' in R. A positive value of S indicates that there is an upward trend in which the observations increase with time. A negative value of S means that there is  downward trend. If the value of S is significantly different from zero, we reject the null hypothesis at a chosen significance level (0.95, in our case) and have evidence of the presence of a monotonic trend.
-```{r trends}
+
+<!--- Chunk for applying Mann-Kendall test, you need to give file names and set 'provided'. Dependencies: temp.obs,prec.obs --->
+```{r trends, include=F, cache=T}
 # Function that applies a Mann-Kendall test to each column/time series in the matrix 'tseries' a gives as a result a vector with values -1, 0, 1 where -1 indicates a negative trend, 1 indicates a positive trend and 0 means that the statistic is not significantly different from zero (no significant trend detected)
-MKapply <- function(tseries,alpha,pTable=T)
+MKapply <- function(tseries,alpha)
 {
   nsts <- ncol(tseries)
   scores <- rep(0,nsts)
@@ -119,23 +107,58 @@ for(j in 1:nsts)
       scores[j] <- -1
   }
 }
-  if(pTable==T)  table(scores)
   return(scores)
 }
 
-# Plot the times series for each station (or some stations)
-ys <- temp.cl[[3]]
-nsts <- ncol(temp.obs)
-plot(ys[1]:ys[2],temp.obs[,1],type="l",las=2,xlab="Year",ylab="Annual temperature",col="gray",ylim=c(20,80))
-for(i in seq(2,nsts,by=25))
-  lines(ys[1]:ys[2],temp.obs[,i],col="gray")
-
+# Use the function to calculate the scores for temperature and precipitation data
+tscores <- MKapply(temp.obs,alpha = 0.95)
+pscores <- MKapply(prec.obs,alpha = 0.95)
+# these scores will be used in a following chunk
 ```
 
 # Results
+Figure 1 shows the time series from a sample of weather stations that we used for the trend analysis. We can not say that there are positive or negative trends in the data just by watching this time series either for temperature or precipitation. However, it is clear that there is more variation in the time series of annual precipitation (bottom, Fig. 1) compared to the time series of annual temperature (top, Fig. 1).
+
+<!--- Chunk for plotting the time series for different stations, you need to choose which subset of time series to plot. Dependencies: temp.cl,temp.obs,prec.cl,prec.obs --->
+````{r tseries, dev='png', fig.cap="Figure 1. Some time series of temperature (top) and precipitation (bottom) from 1950 to 2016 that we got after cleaning the data."}
+# Plot the times series for each station (or some stations)
+ys <- rbind(temp.cl[[3]],prec.cl[[3]])
+nsts <- c(ncol(temp.obs),ncol(prec.obs))
+plot(ys[1,1]:ys[1,2],temp.obs[,1],type="l",las=2,xlab="Year",ylab="Annual temperature",col="tomato",ylim=c(20,80))
+  for(i in seq(2,nsts[1],by=25))
+    lines(ys[1,1]:ys[1,2],temp.obs[,i],col="tomato")
+plot(ys[2,1]:ys[2,2],prec.obs[,1],type="l",las=2,xlab="Year",ylab="Annual precipitation",col="green",ylim=c(20,80))
+  for(i in seq(2,nsts[2],by=5))
+    lines(ys[2,1]:ys[2,2],prec.obs[,i],col="green")
+```
+
+After applying the Mann-Kendall test for all the time series, i.e. for each weather station, we looked at the p-values and classified the values of the scores into three categories: significant negative trend (identified with a value of -1), non-significant trend (0), and significant positive trend (1). The following table shows the number of stations in each class for the temperature data:
+`r table(tscores)`
+where we can see that more than half of the stations showed a positive trend. The corresponding table for precipitation is
+`r table(pscores)`
+where also positive trends are common.
+
+<!--- Chunk for plotting the scores from the Mann-Kendall test for all stations. Dependencies: tscores,pscores,temp.cl,prec.cl --->
+```{r map-trends, dev='png', fig.cap="Figure 2. Some time series of temperature (top) and precipitation (bottom) from 1950 to 2016 that we got after cleaning the data."}
+# showing the temp and prec trends in each location (maps package)
+
+# Temperature
+# map of the USA with state divisions
+map('state', fill = F)
+# extract the unique coordinate pairs to plot the stations
+temp.sts <- temp.cl[[2]][nrow(temp.obs)*(1:ncol(temp.obs)),]
+# plot point at the locations of the stations and color the points according to the score values
+points(temp.sts,pch=19,col="orange")
+
+# Precipitation
+points(prec.sts,pch=19,col="blue")
+prec.sts <- prec.cl[[2]][nrow(prec.obs)*(1:ncol(prec.obs)),]
+```
+
 Answer the research questions:
 2) In what parts of the country are temperatures getting warmer? Are there any parts that actually got colder over 1905-2010?
 3) Can we say, based on these data, that a change in precipitation has occurred over this period?
+Figure X shows the locations if the n1 temperature and n2 precipitation stations used in this study. Remember that we got rid of the stations with less than 40 years of data.
 
 # Discussion
 
