@@ -41,33 +41,3 @@ for(i in seq_along(states)){
   }
   return(annualmean)
 }
-
-# Apply function for temperature
-res1 <- acis2dfpcpn(sdate="19500101", edate="20161231", states=state.abb, elem=1)
-fname1 <- paste0("data/USAannualTemp",sdate,"_", edate,".rds")
-saveRDS(res1, file=fname1)
-
-# Apply function for temperature
-res2 <- acis2dfpcpn(sdate="19500101", edate="20161231", states=state.abb, elem=2)
-fname2 <- paste0("data/USAannualPcpn",sdate,"_", edate,".rds")
-saveRDS(res2, file=fname2)
-
-####
-lf <- list.files(pattern="20161231$", path="data/", full.names = T)
-temp <- data.frame()
-for(i in lf[2]){
-  tmp <- readRDS(i)
-  tmp2 <- reshape2::melt(tmp, id.vars="year")
-  temp <- rbind(temp, tmp2)
-}
-temp <- temp[!temp$variable=="NA.",]
-grid <- strsplit(as.character(temp$variable), ",")
-latff <- sapply(grid,"[",2)
-temp$lat <- as.numeric(gsub(x=latff, replacement = "",pattern=" |)"))
-lonff <- sapply(grid,"[",1)
-temp$lon <- as.numeric(sub("\\D+","",lonff))*-1
-temp$state <- substr(temp$variable,1,2)
-library(qdapRegex)
-temp$name <- unlist(rm_between(text.var =lonff, left = "_", right="_", extract=TRUE))
-                  
-saveRDS(temp, "../ModularityHW/USAannualTemp1950_2016.rds")
