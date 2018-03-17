@@ -138,21 +138,37 @@ where we can see that more than half of the stations showed a positive trend. Th
 `r table(pscores)`
 where also positive trends are common.
 
-<!--- Chunk for plotting the scores from the Mann-Kendall test for all stations. Dependencies: tscores,pscores,temp.cl,prec.cl --->
-```{r map-trends, dev='png', fig.cap="Figure 2. Some time series of temperature (top) and precipitation (bottom) from 1950 to 2016 that we got after cleaning the data."}
-# showing the temp and prec trends in each location (maps package)
-
-# Temperature
-# map of the USA with state divisions
-map('state', fill = F)
+<!--- Chunk for plotting the temperature scores from the Mann-Kendall test for all stations. Dependencies: tscores,temp.cl,library maps --->
+```{r map-trends, dev='png', fig.cap="Figure 2. Map of the USA with the location of weather stations. Blue points represent stations were there is a significant positive trend in the temperature time series. Yellow points are stations with no significant trend and red points correspont to stations were a negative trend was found."}
 # extract the unique coordinate pairs to plot the stations
 temp.sts <- temp.cl[[2]][nrow(temp.obs)*(1:ncol(temp.obs)),]
-# plot point at the locations of the stations and color the points according to the score values
-points(temp.sts,pch=19,col="orange")
+# plot points at the locations of the stations and color the points according to the score values
+# map of the USA with state divisions
+map('state', fill = F)
+  title("Temperature")
+  # positive trends
+  points(temp.sts[which(tscores==1),],pch=20,col="blue")
+  # no trends
+  points(temp.sts[which(tscores==0),],pch=20,col="yellow")
+  # negative trends
+  points(temp.sts[which(tscores==-1),],pch=20,col="red")
 
-# Precipitation
-points(prec.sts,pch=19,col="blue")
+```
+
+<!--- Chunk for plotting the precipitation scores from the Mann-Kendall test for all stations. Dependencies: pscores,prec.cl,library maps --->
+```{r map-trends, dev='png', fig.cap="Figure 3. Map of the USA with the location of weather stations. Blue points represent stations were there is a significant positive trend in the precipitation time series. Yellow points are stations with no significant trend and red points correspont to stations were a negative trend was found."}
+# extract the unique coordinate pairs to plot the stations
 prec.sts <- prec.cl[[2]][nrow(prec.obs)*(1:ncol(prec.obs)),]
+# plot points at the locations of the stations and color the points according to the score values
+# map of Alabama, Ohio and Tennesse
+map('state', fill = F, region=c("alabama","ohio","tennessee"))
+  title("Precipitation")
+  # positive trends
+  points(prec.sts[which(pscores==1),],pch=19,col="blue")
+  # no trends
+  points(prec.sts[which(pscores==0),],pch=19,col="yellow")
+  # negative trends
+  points(prec.sts[which(pscores==-1),],pch=19,col="red")
 ```
 
 Answer the research questions:
