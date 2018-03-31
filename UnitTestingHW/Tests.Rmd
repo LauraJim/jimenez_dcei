@@ -2,16 +2,54 @@
 title: "Tests"
 author: "Laura Jiménez"
 date: "March 2018"
-output: 
-  pdf_document:
-    highlight: tango
+output: html_document
 fontsize: 11pt
 geometry: margin=1in
 documentclass: article
-bibliography: .bib
-csl: Science.csl
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# Tests for Supp
+
+```{r Supp_source, echo=T}
+source("Supp.R")
+```
+In order to test the function Supp we need to define the following variables:
+-mu.lim = a vector that contains the minimum and maximum values for each of the entries of a vector representing the mean of a MVN distribution
+-mu =  the mean of a MVN distribution
+-A = a square matrix of dimensions equal to the lenght of mu
+
+We need to test different cases: 1) when mu is in the permited ranges and A is a positive matrix,...
+
+```{r Supp_test1, echo=T}
+
+```
+
+# Tests for Initth
+
+```{r Initth_source, echo=T}
+source("Initth.R")
+```
+
+```{r Inith_test1, echo=T}
+
+```
+
+# Tests for PlotIterations
+
+```{r PlotIterations_source, echo=T}
+source("PlotIterations.R")
+```
+
+```{r PlotIterations_test1, echo=T}
+
+```
+
+# Tests for Energy
+
+```{r Energy_source, echo=T}
+source("Energy.R")
+```
+
+```{r Energy_test1, echo=T}
+
 ```
