@@ -4,12 +4,12 @@
 # precision matrix (A) of a multivariate normal distribution belong to
 # to the support of the objective function (a posterior distribution).
 
-# ARGUMENTS:
+# ARGUMENTS: see NOTES
 # th --- must be a numeric vector of length = lenght(mu) + (ncol(A)*(ncol(A)+1)/2)
 # for example: in case of a bivariate normal distribution, length(mu)=2 and ncol(A)=3
 # then length(th) = 2 + (2*3)/2 = 5 (degrees of freedom)
 
-# OUTPUTS:
+# OUTPUTS: see NOTES
 # TRUE --- if valid values of mu and A are contained in the vector th
 # FALSE --- if one or both parameters are out of the support of the objective function
 
