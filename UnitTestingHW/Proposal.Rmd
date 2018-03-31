@@ -1,0 +1,25 @@
+---
+title: "Proposal"
+author: "Laura Jiménez"
+date: "March 2018"
+output: 
+  pdf_document:
+    highlight: tango
+fontsize: 11pt
+geometry: margin=1in
+documentclass: article
+bibliography: .bib
+csl: Science.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+# Methods
+
+# Results
+
+# Discussion
