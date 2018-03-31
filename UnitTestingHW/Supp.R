@@ -19,6 +19,9 @@
 # we fix the variables mu, A and detA as global variables when we call this function
 # so we can use them later in the main code.
 # 2) Variable mu.lim must be defined before using this function.
+# 3) In order to make this function work for any number of dimensions, we
+# must have an auxiliar variable that this function can use to split the
+# entries of th in the right way.
 
 # CODE:
 Supp <- function(th)
