@@ -7,49 +7,98 @@ fontsize: 11pt
 geometry: margin=1in
 documentclass: article
 ---
+## General note
+All the functions will be tested assuming that we are working with an environmental space of two dimensions. These functions can be generalized to work in a space of higher dimension,except for the ones used to display visualizations which only work for two dimensions.
 
-# Tests for Supp
+## Tests for Supp
 
 ```{r Supp_source, echo=T}
 source("Supp.R")
 ```
-In order to test the function Supp we need to define the following variables:
--mu.lim = a vector that contains the minimum and maximum values for each of the entries of a vector representing the mean of a MVN distribution
--mu =  the mean of a MVN distribution
--A = a square matrix of dimensions equal to the lenght of mu
+In order to test the function Supp we need to define the following variables:  
+- mu.lim = a vector that contains the minimum and maximum values for each of the entries of a vector representing the mean of a MVN distribution  
+- th = a vector that contains the values of the mean of a MVN distribution and the unique elements from its precision matrix
 
-We need to test different cases: 1) when mu is in the permited ranges and A is a positive matrix,...
+We need to test different cases:  
+1. when mu belongs to the given ranges and A is a positive matrix (passed)  
+```{r Supp_test1, echo=T,eval=F}
+# notice that every pair of element in mu.lim correspond to the range of each variable in the multivariate space
+mu.lim <- c(0,1,-1,1)
+mu <- c(0.69,-0.25)
+A <- matrix(c(42.91354,-20.97932,-20.97932,23.58958),ncol=2,byrow=T)
+# notice that order in which the entries of th must be specified
+th <- c(mu,A[1,1],A[2,2],A[1,2])
 
-```{r Supp_test1, echo=T}
+if(Supp(th)){
+  print("passed")
+} else {
+  print("failed")
+}
+```
+2. when mu belongs to the given ranges and A isn't a positive matrix (failed)  
+```{r Supp_test2, echo=T,eval=F}
+mu.lim <- c(0,1,-1,1)
+mu <- c(0.69,-0.25)
+# it is enough to change the sign of one entry in the previous matrix to get a matrix that is not possitive definite
+A <- matrix(c(42.91354,-20.97932,-20.97932,23.58958),ncol=2,byrow=T)
+th <- c(mu,-A[1,1],A[2,2],A[1,2])
 
+if(Supp(th)){
+  print("passed")
+} else {
+  print("failed")
+}
+```
+3. when mu don't belong to the given ranges (failed)  
+```{r Supp_test3, echo=T,eval=F}
+mu.lim <- c(0,1,-1,1)
+# it is enough to change one of the entries of mu to make Supp fail
+mu <- c(0.69,-0.25) + 1
+A <- matrix(c(42.91354,-20.97932,-20.97932,23.58958),ncol=2,byrow=T)
+th <- c(mu,A[1,1],A[2,2],A[1,2])
+
+if(Supp(th)){
+  print("passed")
+} else {
+  print("failed")
+}
 ```
 
-# Tests for Initth
-
+## Tests for Initth
+The function Initth do not accept any arguments, however, there are two variables that must be defined before using this function: mu0 and A0. These are the parameters of the a priori distribution for mu.
 ```{r Initth_source, echo=T}
 source("Initth.R")
 ```
-
-```{r Inith_test1, echo=T}
-
+After defining mu0 and A0, call the function and verify that the output is a numeric vector of length equals to 5.
+```{r Inith_test1, echo=T,eval=F}
+mu0 <- c(0.69,-0.25)
+A0 <- matrix(c(42.91354,-20.97932,-20.97932,23.58958),ncol=2,byrow=T)
+result <- Initth()
+if(length(result)==5){
+  print("passed")
+  print(result)
+} else {
+  print("failed")
+  print(result)
+}
 ```
 
-# Tests for PlotIterations
-
+## Tests for PlotIterations
+A tests will be defined once the function code is ready or we can provide a figure with an example of what we expect as an outpur so we can visually check if the function produced good results.
 ```{r PlotIterations_source, echo=T}
 source("PlotIterations.R")
 ```
 
-```{r PlotIterations_test1, echo=T}
-
+```{r PlotIterations_test1, echo=F}
+print("test under construction")
 ```
 
-# Tests for Energy
-
+## Tests for Energy
+This function can be different if we are working with different models when we defined the likelihood function or the a priori distributions for the parameters of interest.
 ```{r Energy_source, echo=T}
 source("Energy.R")
 ```
-
-```{r Energy_test1, echo=T}
-
+Instead of applying a test on the function, we can provide the mathematical expression of the objective function so we can verify that the code matches this expression.
+```{r Energy_test1, echo=F}
+print("test under construction")
 ```
