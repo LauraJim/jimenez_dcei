@@ -8,10 +8,19 @@ csl: Science.csl
 fontsize: 11pt
 ---
 
+<!--***DAN: To find my comments, search for "***DAN:"-->
+
+<!--***DAN: Your use of git is excellent, lots of commits, with informative commit messages, so great on that count!-->
+
+<!--***DAN: The write-up is definitely adequate for this assignment, with clear-enough text, references, etc. And the figures look nice and are well-enough integrated.-->
+
+<!--***DAN: You skipped a part of the assignment, namely inserting comments indicating which of the 10 "rules of modularity" we learned in class were applied where in your code. The grade is based on effortful completion of all parts of the assignment. Ordinarily, I have been subtracting points for not doing that part of the assignment and giving people the chance to go back and add those comments. HOWEVER you have done a really great job of implementing basically all the lessons of modularity we have learned, so much so that it is quite transparent where you have applied them. So it would be a waste of time to go back and add the comments. So you get 10/10 for effortful completion of all parts of the assignment. Nevertheless, as you already recognize, there are things that did not work and opportunities for further improvment, so I recommend you read all the comments below and study the solutions I have provided.-->
+
 ```{r setup, include=F}
 knitr::opts_chunk$set(echo = F)
 ```
 
+<!--***DAN: the tempdir() call is a problem here, apparently each new Rmd knit makes a new R session, and that causes tempdir to generate a new temporary directory. That means each time checkpoint creates a new local repository for allt he packages uses, and of course that can take forever. At least that is what happened when I tried to use checkpoint with tempdir in an Rmd. I was able to get checkpoint to work by making the location where the .checkpoint folder is established be the same as the folder the Rmd file is in, which also has other advantages as far as transportability to another machine is concerned.-->
 <!---```{r check, echo=F, cache=T, message=F, warning=F}
 library(checkpoint)
 dir.create(file.path(tempdir(),".checkpoint"),recursive=T,showwarnings=F)
@@ -42,6 +51,7 @@ In this work we analyze climate data from weather stations all around the USA to
 
 We obtained measurements for temperature (in Farenheit scale) and precipitation (in milimeters?) from weather stations placed along the USA managed by the Applied Climate Information System which can be downloaded from their website [ACIS](http://builder.rcc-acis.org/). For temperature, we got annual means for all the weather stations from $1950$ to $2016$. The precipitaion data are also annual means during the same period but we only considered three states: Alabama, Ohio and Tennessee.
 
+<!--***DAN: Nice work on this comment and manually specifying the dependencies.-->
 <!--- Chunk for reading data, you need to give file names and set 'provided'. Dependencies: mtime --->
 ```{r data, cache=T, cache.extra=list(mtime("USAAnnualTemp1950_2008.rds"),mtime("USAAnnualPcpn1950_2008.rds"))}
 # provided == T, if data are stored in the same directory as the code
@@ -114,10 +124,11 @@ temp.cl <- cleanTP(dats=temp,minY=miny)
 temp.obs <- temp.cl[[1]]
 temp.obs[1:8,1:8]
 dim(temp.obs)
-prec.cl <- cleanTP(prec,40)
+prec.cl <- cleanTP(prec,40)#***DAN: why did you put 40 here instead of miny?
 prec.obs <- prec.cl[[1]]
 prec.obs[1:8,1:8]
 dim(prec.obs)
+#***DAN: Nice use of a function called twice on the two variables - good modularity.
 ```
 
 Ideally, the period $1950-2016$ includes $67$ observations for each weather station, however, not all these observations were actually stored in the database. Thus, there are a lot of missing values in the raw datasets that we needed to clean. We set a threshold of `r miny` observations per weather station, so that stations with less that `r miny` years of data were left out of the analysis. After removing those stations, we ended up with `r ncol(temp.obs)` stations with enough temperature measurements and `r ncol(prec.obs)` stations with enough precipitation measurements.
@@ -152,6 +163,7 @@ for(j in 1:nsts)
 tscores <- MKapply(temp.obs,alpha = 0.95)
 pscores <- MKapply(prec.obs,alpha = 0.95)
 # these scores will be used in a following chunk
+#***DAN: another good instance of modularity
 ```
 
 # Results
