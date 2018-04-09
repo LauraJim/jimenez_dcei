@@ -22,14 +22,32 @@
 # NOTES:
 # Some variables that contain the species data must be defined before using this function.
 
-PlotIterations <- function( th, info, from, thin, col, lev, ...) 
+PlotIterations <- function( info, from=2000, thin=200, lev=0.95, cols=c("gray","orange","blue"), ...) 
 {
-  # plot background and occurrence points
-
-  # check that th contains a valid value and use it to plot the first ellipse
-
   # calculate the value of the posterior distribution for each row of info
-
+  post <- exp(-info$Us - max(-info$Us) + 500)/exp(500) ## This is a normalized posterior from 0 to 1
   # find the MAP and sort the posterior values
+  ix <- which.max(post)[1]
+  map <- info$output[ix,]
+  # plot background and occurrence points
+  plot(env.d, pch=".", col=cols[1], ...)
+  points(env.sp, pch=19, col=cols[2])
+  # create a vector of indices to choose from the simulated values of the posterior
+  indices <- seq(from, info$Tr, thin)
   # plot all the ellipses using a different color according to their posterior value
+  for (i in indices) 
+  {
+    if(Supp(info$output[i,])) # each time check if the values are valid
+    {
+      el<-ellipse::ellipse(x=chol2inv(chol(A)),centre = mu,level=lev) 
+      lines(el,col=grey(1-post[i]),lwd=2) 
+    }
+  }
+  if (!(is.null(th)))
+    if(Supp(th)) ## after this step we kept the MAP in the variables mu and A
+    {
+      el<-ellipse::ellipse(x=chol2inv(chol(A)),centre = mu,level=lev) 
+      lines(el,col=cols[3],lwd=3)
+    }
+  # check that th contains a valid value and use it to plot the first ellipse
 }
