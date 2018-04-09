@@ -22,8 +22,6 @@
 # NOTES:
 # Some variables that contain the species data must be defined before using this function.
 
-# If th not NULL, then also plot a Bivariate Normal with parameters th (See function Supp above)
-# It's posible to add other valid parameters for the function contour or change the color (See function PlotBN above)
 PlotIterations <- function( th, info, from, thin, col, lev, ...) 
 {
   # plot background and occurrence points
