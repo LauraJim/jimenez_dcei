@@ -18,7 +18,7 @@
 # it can not include more arguments or have a different kind of output, instead,
 # we fix the variables mu, A and detA as global variables when we call this function
 # so we can use them later in the main code.
-# 2) Variable mu.lim must be defined before using this function.
+# 2) Variables mu.lim and Et must be defined before using this function.
 # 3) In order to make this function work for any number of dimensions, we
 # must have an auxiliar variable that this function can use to split the
 # entries of th in the right way.
@@ -30,25 +30,19 @@ Supp <- function(th)
   # If we have two environmental variables, th has 2 (mu) + 2 (A diag) + 1 (A off diag) = 5 parameters
   mu <<- th[1:2]
   A <<- matrix( c( th[3], th[5], th[5], th[4]), nrow=2, ncol=2)
- 
-   # Check if the entries of mu belong to the intervals defined in the vector mu.lim
+  # Check if the entries of mu belong to the intervals defined in the vector mu.lim
   rt <- (mu.lim[1] < mu[1]) & (mu[1] < mu.lim[2])
   rt <- rt & ((mu.lim[3] < mu[2]) & (mu[2] < mu.lim[4]))
-
   # Convert mu into a matrix (for calculation purposes)
   mu <<- matrix( mu, nrow=2, ncol=1)
-
   # Test if the matrix A is positive definite
   if (rt) { 
     ev <- eigen(A)$values
-    
     # Save the values of detA and suma.Et so they are not computed again in the Energy function
     detA <<- prod(ev)
     suma.Et <<- sum( apply( Et, 1, function(yi) { ax<-as.matrix(yi - mu); exp(-0.5 * (t(ax) %*% A %*% ax)) }))
-    
     # TRUE if all eigenvalues are greater than zero (A is positive definite) and suma.Et is positive 
     all(ev > 0) & (suma.Et > 0)
-    
   } else
     FALSE  # neither mu or A passed the test
 }
