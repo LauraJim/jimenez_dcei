@@ -4,8 +4,6 @@ author: "Laura Jiménez"
 date: "March 2018"
 output: html_document
 fontsize: 11pt
-geometry: margin=1in
-documentclass: article
 ---
 ## General note
 All the functions will be tested assuming that we are working with an environmental space of two dimensions. These functions can be generalized to work in a space of higher dimension,except for the ones used to display visualizations which only work for two dimensions.
