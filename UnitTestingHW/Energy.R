@@ -18,6 +18,7 @@
 # are defined, so th is ignored. This is the right way we need to specify
 # this function in order to be able to use the t-walk algorithm.
 
+# CODE:
 Energy <- function(th) 
 { 
   ax1 <- (mu - mu0)
