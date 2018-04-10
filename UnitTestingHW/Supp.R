@@ -9,7 +9,7 @@
 # for example: in case of a bivariate normal distribution, length(mu)=2 and ncol(A)=3
 # then length(th) = 2 + (2*3)/2 = 5 (degrees of freedom)
 
-# OUTPUTS: see NOTES
+# OUTPUT: see NOTES
 # TRUE --- if valid values of mu and A are contained in the vector th
 # FALSE --- if one or both parameters are out of the support of the objective function
 
@@ -41,7 +41,8 @@ Supp <- function(th)
     # Save the values of detA and suma.Et so they are not computed again in the Energy function
     detA <<- prod(ev)
     suma.Et <<- sum( apply( Et, 1, function(yi) { ax<-as.matrix(yi - mu); exp(-0.5 * (t(ax) %*% A %*% ax)) }))
-    # TRUE if all eigenvalues are greater than zero (A is positive definite) and suma.Et is positive 
+    # TRUE if all eigenvalues are greater than zero (meaning that A is positive definite)
+    # PLUS we check if suma.Et is positive since we calculate the logarithm of this number in the posterior
     all(ev > 0) & (suma.Et > 0)
   } else
     FALSE  # neither mu or A passed the test
