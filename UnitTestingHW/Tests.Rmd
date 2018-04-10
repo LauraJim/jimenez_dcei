@@ -1,12 +1,12 @@
 ---
-title: "Tests"
+title: "Tests for the functions used in the final project"
 author: "Laura Jiménez"
 date: "March 2018"
 output: html_document
 fontsize: 11pt
 ---
 ## General note
-All the functions will be tested assuming that we are working with an environmental space of two dimensions. These functions can be generalized to work in a space of higher dimension,except for the ones used to display visualizations which only work for two dimensions.
+All the functions will be tested assuming that we are working with an environmental space of two dimensions. These functions can be generalized to work with higher-dimensional spaces (except for the ones used to display visualizations which only will work for two dimensions).
 
 ## Tests for Supp
 
@@ -14,12 +14,17 @@ All the functions will be tested assuming that we are working with an environmen
 source("Supp.R")
 ```
 In order to test the function Supp we need to define the following variables:  
+- Et = a matrix with two columns such that each row contains environmental combinations representing the climatic background (every time the values of mu and A change we need to check that they won't produce an error in future calculations when combined with the points of the background, see the expression of the posterior)  
 - mu.lim = a vector that contains the minimum and maximum values for each of the entries of a vector representing the mean of a MVN distribution  
 - th = a vector that contains the values of the mean of a MVN distribution and the unique elements from its precision matrix
 
 We need to test different cases:  
-1. when mu belongs to the given ranges and A is a positive matrix (passed)  
-```{r Supp_test1, echo=T,eval=F}
+1. mu belongs to the given ranges and A is a positive matrix = passed  
+```{r Supp_test1, echo=T, cache=T}
+# read the file that contains the climatic background points
+env <- read.csv("VarsCrdsBackground.csv",header=T)
+# only keep the columng that correspond to climatic data
+Et <- as.matrix(env[ , c(6,7)])
 # notice that every pair of element in mu.lim correspond to the range of each variable in the multivariate space
 mu.lim <- c(0,1,-1,1)
 mu <- c(0.69,-0.25)
@@ -33,8 +38,8 @@ if(Supp(th)){
   print("failed")
 }
 ```
-2. when mu belongs to the given ranges and A isn't a positive matrix (failed)  
-```{r Supp_test2, echo=T,eval=F}
+2. mu belongs to the given ranges and A isn't a positive matrix = failed  
+```{r Supp_test2, echo=T}
 mu.lim <- c(0,1,-1,1)
 mu <- c(0.69,-0.25)
 # it is enough to change the sign of one entry in the previous matrix to get a matrix that is not possitive definite
@@ -47,8 +52,8 @@ if(Supp(th)){
   print("failed")
 }
 ```
-3. when mu don't belong to the given ranges (failed)  
-```{r Supp_test3, echo=T,eval=F}
+3. mu don't belong to the given ranges = failed  
+```{r Supp_test3, echo=T}
 mu.lim <- c(0,1,-1,1)
 # it is enough to change one of the entries of mu to make Supp fail
 mu <- c(0.69,-0.25) + 1
