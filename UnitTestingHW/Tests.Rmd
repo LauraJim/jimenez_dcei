@@ -5,8 +5,9 @@ date: "March 2018"
 output: html_document
 fontsize: 11pt
 ---
-## General note
+## General notes
 All the functions will be tested assuming that we are working with an environmental space of two dimensions. These functions can be generalized to work with higher-dimensional spaces (except for the ones used to display visualizations which only will work for two dimensions).
+All the functions consider that mu (vector of means, or ellipses centroid) and A (precisión matrix, or inverse of the covariance matrix) are the parameters that define the multivariate normal distribution associated with the fundamental niche of the species. These two variables are global variables in the main program, so we need to be careful when using them in the functions.
 
 ## Tests for Supp
 
@@ -22,14 +23,14 @@ We need to test different cases:
 1. mu belongs to the given ranges and A is a positive matrix = passed  
 ```{r Supp_test1, echo=T, cache=T}
 # read the file that contains the climatic background points
-env <- read.csv("VarsCrdsBackground.csv",header=T)
+env <- read.csv("VarsCrdsBackground.csv",header=T) ## provide a url instead!!
 # only keep the columng that correspond to climatic data
 Et <- as.matrix(env[ , c(6,7)])
 # notice that every pair of element in mu.lim correspond to the range of each variable in the multivariate space
 mu.lim <- c(0,1,-1,1)
 mu <- c(0.69,-0.25)
 A <- matrix(c(42.91354,-20.97932,-20.97932,23.58958),ncol=2,byrow=T)
-# notice that order in which the entries of th must be specified
+# notice the order in which the entries of th are specified
 th <- c(mu,A[1,1],A[2,2],A[1,2])
 
 if(Supp(th)){
@@ -68,7 +69,7 @@ if(Supp(th)){
 ```
 
 ## Tests for Initth
-The function Initth do not accept any arguments, however, there are two variables that must be defined before using this function: mu0 and A0. These are the parameters of the a priori distribution for mu.
+The function Initth do not accept any arguments, however, there are three variables that must be defined before using this function: mu0, CholSigma0 and CholW. These are the parameters of the a priori distribution for mu and A.
 ```{r Initth_source, echo=T}
 source("Initth.R")
 ```
