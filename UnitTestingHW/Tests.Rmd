@@ -6,6 +6,7 @@ output: html_document
 fontsize: 11pt
 ---
 ## General notes
+
 All the functions will be tested assuming that we are working with an environmental space of two dimensions. These functions can be generalized to work with higher-dimensional spaces (except for the ones used to display visualizations which only will work for two dimensions).
 All the functions consider that mu (vector of means, or ellipses centroid) and A (precisión matrix, or inverse of the covariance matrix) are the parameters that define the multivariate normal distribution associated with the fundamental niche of the species. These two variables are global variables in the main program, so we need to be careful when using them in the functions.
 
@@ -19,8 +20,8 @@ In order to test the function Supp we need to define the following variables:
 - mu.lim = a vector that contains the minimum and maximum values for each of the entries of a vector representing the mean of a MVN distribution  
 - th = a vector that contains the values of the mean of a MVN distribution and the unique elements from its precision matrix
 
-We need to test different cases:  
-1. mu belongs to the given ranges and A is a positive matrix = passed  
+We need to test three different cases:  
+1. mu belongs to the given ranges and A is a positive matrix, so that the output must be TRUE  
 ```{r Supp_test1, echo=T, cache=T}
 # read the file that contains the climatic background points
 env <- read.csv("VarsCrdsBackground.csv",header=T) ## provide a url instead!!
@@ -39,7 +40,7 @@ if(Supp(th)){
   print("failed")
 }
 ```
-2. mu belongs to the given ranges and A isn't a positive matrix = failed  
+2. mu belongs to the given ranges and A isn't a positive matrix, so that the output must be FALSE  
 ```{r Supp_test2, echo=T}
 mu.lim <- c(0,1,-1,1)
 mu <- c(0.69,-0.25)
@@ -47,13 +48,13 @@ mu <- c(0.69,-0.25)
 A <- matrix(c(42.91354,-20.97932,-20.97932,23.58958),ncol=2,byrow=T)
 th <- c(mu,-A[1,1],A[2,2],A[1,2])
 
-if(Supp(th)){
+if(!Supp(th)){
   print("passed")
 } else {
   print("failed")
 }
 ```
-3. mu don't belong to the given ranges = failed  
+3. mu don't belong to the given ranges, so that the output must be FALSE  
 ```{r Supp_test3, echo=T}
 mu.lim <- c(0,1,-1,1)
 # it is enough to change one of the entries of mu to make Supp fail
@@ -61,7 +62,7 @@ mu <- c(0.69,-0.25) + 1
 A <- matrix(c(42.91354,-20.97932,-20.97932,23.58958),ncol=2,byrow=T)
 th <- c(mu,A[1,1],A[2,2],A[1,2])
 
-if(Supp(th)){
+if(!Supp(th)){
   print("passed")
 } else {
   print("failed")
@@ -69,21 +70,35 @@ if(Supp(th)){
 ```
 
 ## Tests for Initth
-The function Initth do not accept any arguments, however, there are three variables that must be defined before using this function: mu0, CholSigma0 and CholW. These are the parameters of the a priori distribution for mu and A.
+
+The function Initth do not accept any arguments, however, there are 
+three variables that must be defined before using this function: mu0, CholSigma0 and CholW. These are the parameters of the a priori distribution for mu and A.
+
 ```{r Initth_source, echo=T}
 source("Initth.R")
 ```
-After defining mu0 and A0, call the function and verify that the output is a numeric vector of length equals to 5.
-```{r Inith_test1, echo=T,eval=F}
-mu0 <- c(0.69,-0.25)
-A0 <- matrix(c(42.91354,-20.97932,-20.97932,23.58958),ncol=2,byrow=T)
-result <- Initth()
-if(length(result)==5){
-  print("passed")
-  print(result)
+After defining mu0 and Sigma0, define the variables CholSigma0 and Cholw (the Cholesky decompositions of Sigma0 and W, respectively), then, call the function and verify that the output is a numeric vector of length equals to 5.
+```{r Inith_test1, echo=T}
+# Define the required variables
+mu0 <- c(-1.09, -0.20) # mean vector, MVN prior
+Sigma0 <- matrix(c(0.0144,0,0,0.0324),ncol=2,byrow=T) # covariance matrix, MVN prior
+CholSigma0 <- chol(Sigma0)
+alpha <- 2 #shape parameter, Wishart prior
+W <- alpha*chol2inv(CholSigma0)  #scale matrix, Wishart prior
+CholW <- chol(W)
+# mu0, Sigma0 and CholW will be used when evaluating Initth
+result1 <- Initth()
+result2 <- Initth()
+# use the function twice to check that it produces two vectors of length equals to 5 and that these vectors are different
+if(length(c(result1,result2)) == 10){
+  if(sum(result1 - result2) != 0)
+    print("passed")
+  print(round(result1,2))
+  print(round(result2,2))
 } else {
   print("failed")
-  print(result)
+  print(round(result1,2))
+  print(round(result2,2))
 }
 ```
 
