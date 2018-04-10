@@ -1,29 +1,30 @@
 ---
-title: "Proposal"
+title: "Final Project Proposal"
 author: "Laura Jiménez"
-date: "March 2018"
+date: "April 2018"
 output: html_document
 fontsize: 11pt
-geometry: margin=1in
-documentclass: article
 #bibliography: .bib
 #csl: Science.csl
 ---
 
-# The problem
+## The problem
 
-  I address the problem of how to estimate a hypothetical fundamental niche of a species from presence data. I do this by:  
-1. Postulating a simple shape for the physiologically defined niche of a species (Hutchinson's fundamental niche). I use a multivariate normal model to represent the fundamental niche, so that the parameters of interest are a vector of means and a precision matrix (which is defined as the inverse of the covariance matrix)  
-2. Providing prior information for the estimation of the parameters that define the shape of the niche
-3. Providing a probabilistic (i.e. Bayesian) statement of the problem and the posterior distribution for estimating the parameters of fundamental niches, as well as the R code to perform the estimations.  
+  I address the problem of how to estimate the hypothetical fundamental niche of a species from presence data. I do this by:  
+1. Defining an environmental space in which each axis represents a climatic variable. In this space we can plot the existing environmental conditions from the geographic region of interest and use them mainly for interpretating the results.  
+2. Using georeferenced occurrences of the species and its corresponding environmental conditions as the primary data, and climatic tolerance ranges from physiological experiments as _a priori_ information.  
+3. Postulating a simple shape for the niche of a species (Hutchinson's fundamental niche). I use a multivariate normal model to represent the fundamental niche, so that the parameters of interest are a vector of means and a precision matrix (which is defined as the inverse of the covariance matrix).  
+4. Providing a probabilistic (i.e. Bayesian) statement of the problem and the posterior distribution for estimating the parameters of fundamental niches.  
 
-  The ultimate goal of the final project will be to create a package to perform all the calculations needed to apply this method of niche modeling estimation and to analyze the results.
+## Purpose and end products of the project
+  The ultimate goal of the final project will be to create an R package to perform all the calculations needed to apply this method of niche estimation and to analyze the results.
+  The R package will contain all the functions that the users will need to apply the model to their data, to produce visualizations of their data and the results of the niche estimation, and to adapt the model to different variations in the data.
+  The second product of this final project will be a manual that contains a description of the functions and data included in the package, together with some examples that explain how to use them.
 
-# Statistical model
-
-  The details about the assumptions and modeling are not provided here, however, it is important to know that under this framework, our first objective is to calculate a posterior distribution for the parameters of the fundamental niche of a given species. The resulting expression for the posterior comes from: (1) assuming an ellipsoidal shape for the niche, and (2), the addition of a priori information for the centroid and variances describing the niche.  
+## A Bayesian method for niche estimation
   Three kinds of data are needed to apply our method:  
-1. __Occurrence data__: geo-referenced measurements of the environmental variables that are assumed to be the most important for describing the fundamental niche of the species of interest.  
-2. __Background data__: measurements of the environmental variables at all the geographical sites that belong to a grid defined for a geographic region of reference.  
+1. __Background data__: measurements of the environmental variables that are assumed to be the most important for describing the fundamental niche of the species of interest. This set of environmental conditions correspond to all the geographical sites belonging to a grid that covers a geographic region of reference.  
+2. __Occurrence data__: georeferenced presences of the species and its corresponding measurements of environmental variables.  
 3. __Tolerance ranges__: intervals of tolerance for each variable that define the environemental variable, usually they come from physiological experiments.  
+  The details about the assumptions and the statistical model are not provided here, however, it is important to notice that under this Bayesian framework the purpose is to calculate a posterior distribution for the parameters that define fundamental niche of a species. The resulting expression for the posterior comes from: (1) assuming an ellipsoidal shape for the niche (which translates into using a multivariate normal distribution to define the likelihood), and (2), the addition of a priori information for the centroid and variances describing the niche.  
   The posterior distribution is the objective function of the analysis since it comprises all the information about the parameters that describe the fundamental niche. We use an MCMC algorithm called "t-walk" (Christen and Fox, 2010) to generate simulations from the posterior. The set of draws provides posterior values of the mean, and the covariance matrix, which can be used to construct ellipsoids and to derive metrics reflecting the uncertainty in the estimated parameters.
