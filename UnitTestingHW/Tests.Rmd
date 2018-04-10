@@ -113,11 +113,17 @@ print("test under construction")
 ```
 
 ## Tests for Energy
-This function can be different if we are working with different models when we defined the likelihood function or the a priori distributions for the parameters of interest.
+
+This function can be different if we are working with different models when we defined the likelihood function or the a priori distributions for the parameters of interest.  
 ```{r Energy_source, echo=T}
 source("Energy.R")
+Energy
 ```
-Instead of applying a test on the function, we can provide the mathematical expression of the objective function so we can verify that the code matches this expression.
-```{r Energy_test1, echo=F}
-print("test under construction")
-```
+
+Instead of applying a test on the function, I provide here the mathematical expression of the objective function so we can verify that the code matches this expression.
+These two terms must be contained in the Energy function and correspond to the log-likelihood function of mu and A:  
+$$ -\frac{1}{2}\sum_{i=1}^{n}\left(x_{i}-\mu\right)^{T}A\left(x_{i}-\mu\right) - n\log\left\{\sum_{y\in E(t;G)}\exp\left[-\frac{1}{2}\left(y-\mu\right)^{T}A\left(y-\mu\right)\right]\right\} $$  
+Notice that the argument of the function $log$ is coded as _suma.Et_ inside the Energy function. The variable coded as _env.sp_ represents the matrix that contains the environmental combinations where the species was observed, $x_{1},...,x_{n}$.
+The other three terms contained in the Energy function correspond to the _a priori_ densities:  
+$$  -\frac{1}{2}(\mu-\mu_0)^{T}A_0(\mu-\mu_0) + \frac{\alpha-d-1}{2}\log(det(A)) - \frac{1}{2}tr(AW^{-1}), $$  
+where $det(A)$ is the determinant of the matrix A and $tr(\cdot)$ is the trace of the matrix (the sum of the elements in the diagonal).
