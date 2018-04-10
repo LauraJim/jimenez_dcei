@@ -6,7 +6,7 @@
 # mu and a Wishart distribution for A.
 
 # ARGUMENTS: see NOTES
-# NONE but it uses the variables CholW, mu0 and CholSigma
+# NONE but it uses the variables CholW, mu0 and CholSigma0
 
 # OUTPUTS: see NOTES
 # A numeric vector of length = lenght(mu) + (ncol(A)*(ncol(A)+1)/2)
@@ -20,7 +20,7 @@
 # CODE:
 Initth <- function()
 {
-  # Use mu0 and Sigma0 to get a random value from the a priori multivariate normal distribution
+  # Use mu0 and CholSigma0 to get a random value from the a priori multivariate normal distribution
   mu <- mu0 + CholSigma0 %*% rnorm(2)
   # Use CholW to get a random matrix from the a priori Wishart distribution
   X1 <- CholW %*% rnorm(2)
