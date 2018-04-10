@@ -8,7 +8,10 @@
 
 # ARGUMENTS: see NOTES
 # th --- vector that contains the current values of parameters mu and A
-# info --- the output of the MCMC algorithm function (a matrix with all the values for mu and A from the posterior distribution)
+# info --- the output of the function Runtwalk from the package Rtwalk
+#         (a matrix with all the simulated values of mu and A from the posterior distribution)
+# env.d --- a matrix with as many columns as axes in environmental space whose rows are existing climatic conditions
+# env.sp --- a matrix with as many columns as axes in environmental space whose rows are the environmental conditions from occurrence points
 # from --- a number that indicates the start point to choose from info (burn-in time)
 # thin --- a number equals to number of values to skip before selecting the next values from info
 # col --- character vector definig the colors of [1] the background and [2] the occurrence points
@@ -20,9 +23,10 @@
 # a sample of ellipses from the posterior distribution with different colors.
 
 # NOTES:
-# Some variables that contain the species data must be defined before using this function.
+# The global variables mu and A are implicitly used
 
-PlotIterations <- function( info, from=2000, thin=200, lev=0.95, cols=c("gray","orange","blue"), ...) 
+# CODE:
+PlotIterations <- function(info, env.d, env.sp, from=2000, thin=200, lev=0.95, cols=c("gray","orange","blue"), ...)
 {
   # calculate the value of the posterior distribution for each row of info
   post <- exp(-info$Us - max(-info$Us) + 500)/exp(500) ## This is a normalized posterior from 0 to 1
