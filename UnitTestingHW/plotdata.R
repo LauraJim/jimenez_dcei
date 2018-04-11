@@ -35,8 +35,8 @@ plotdata <- function(back,occ.sp,tolran,sp.col)
   ## Environmental Space:
   # Plot environmental variables of species data and the location of reported presences of the species on top
   plot(back[,3],back[,4], pch=".", col=1,xlab="Bio1WHStnd",ylab="Bio12WHStnd",main="Environmental space")
-  points(occ.sp[,1],occ.sp[,2], pch=19, col=sp.col)
+  points(occ.sp[,3],occ.sp[,4], pch=19, col=sp.col)
   rect(xleft=tolran$xleft,xright=tolran$xright,ybottom=tolran$ybottom,ytop=tolran$ytop,border="gold",lwd=2)
-  legend("topleft",legend=c("Species presences:",rotule,"Tolerance ranges"),pch=c(19,NA,NA),
-         bty="n",lty=c(0,0,1),col=c(sp.col,"white","gold"),lwd=2)
+  legend("topleft",legend=c("Species presences","Tolerance ranges"),pch=c(19,NA),
+         bty="n",lty=c(0,1),col=c(sp.col,"gold"),lwd=2)
 }
