@@ -53,5 +53,4 @@ PlotIterations <- function(info, env.d, env.sp, from=2000, thin=200, lev=0.95, c
       el<-ellipse::ellipse(x=chol2inv(chol(A)),centre = mu,level=lev) 
       lines(el,col=cols[3],lwd=3)
     }
-  # check that th contains a valid value and use it to plot the first ellipse
 }
