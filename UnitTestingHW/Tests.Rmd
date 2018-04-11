@@ -7,7 +7,7 @@ fontsize: 11pt
 ---
 ## General notes
 
-All the functions will be tested assuming that we are working with an environmental space of two dimensions. These functions can be generalized to work with higher-dimensional spaces (except for the ones used to display visualizations which only will work for two dimensions).
+All the functions will be tested assuming that we are working with an environmental space of two dimensions. These functions can be modified easylt to work with higher-dimensional spaces (except for the ones used to display visualizations which only will work for two dimensions).
 All the functions consider that mu (vector of means, or ellipses centroid) and A (precisión matrix, or inverse of the covariance matrix) are the parameters that define the multivariate normal distribution associated with the fundamental niche of the species. These two variables are global variables in the main program, so we need to be careful when using them in the functions.
 
 ## Tests for Supp
@@ -15,6 +15,7 @@ All the functions consider that mu (vector of means, or ellipses centroid) and A
 ```{r Supp_source, echo=T}
 source("Supp.R")
 ```
+
 In order to test the function Supp we need to define the following variables:  
 - Et = a matrix with two columns such that each row contains environmental combinations representing the climatic background (every time the values of mu and A change we need to check that they won't produce an error in future calculations when combined with the points of the background, see the expression of the posterior)  
 - mu.lim = a vector that contains the minimum and maximum values for each of the entries of a vector representing the mean of a MVN distribution  
@@ -103,7 +104,7 @@ if(length(c(result1,result2)) == 10){
 ```
 
 ## Tests for PlotIterations
-A tests will be defined once the function code is ready or we can provide a figure with an example of what we expect as an outpur so we can visually check if the function produced good results.
+A test will be defined once the function code is ready or we can provide a figure with an example of what we expect as an output so we can visually check if the function produced good results.
 ```{r PlotIterations_source, echo=T}
 source("PlotIterations.R")
 ```
