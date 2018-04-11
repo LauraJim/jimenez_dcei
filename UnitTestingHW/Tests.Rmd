@@ -25,9 +25,9 @@ We need to test three different cases:
 1. mu belongs to the given ranges and A is a positive matrix, so that the output must be TRUE  
 ```{r Supp_test1, echo=T, cache=T}
 # read the file that contains the climatic background points
-env <- read.csv("Background.csv",header=T) ## provide a url instead!!
-# only keep the columng that correspond to climatic data
-Et <- as.matrix(env[ , c(6,7)])
+env <- read.csv("Background.csv",header=T)
+# only keep the columns that correspond to climatic data
+Et <- as.matrix(env[ , c(3,4)])
 # notice that every pair of element in mu.lim correspond to the range of each variable in the multivariate space
 mu.lim <- c(0,1,-1,1)
 mu <- c(0.69,-0.25)
@@ -103,14 +103,21 @@ if(length(c(result1,result2)) == 10){
 }
 ```
 
-## Tests for PlotIterations
-A test will be defined once the function code is ready or we can provide a figure with an example of what we expect as an output so we can visually check if the function produced good results.
-```{r PlotIterations_source, echo=T}
-source("PlotIterations.R")
+## Tests for plotdata
+
+There are three kind of data needed to apply the niche estimation model for a species of interest. The first thing we want to do is to plot the data to check that the given files contain the information we need.
+We test the function by using the examples of data provided in the GitHub repository and visually assessing the output.
+
+```{r plotdata_source, echo=T}
+source("plotdata.R")
 ```
 
-```{r PlotIterations_test1, echo=F}
-print("test under construction")
+```{r plotdata_test1, echo=T}
+backgr <- read.csv("Background.csv",header=T)
+occu <- read.csv("SpD_50_20.csv",header=T)
+tolran <- read.csv("tolerance_ranges_xy.csv",header=T)
+plotdata(back=backgr,occ.sp=occu,tolran=tolran,sp.col="orange")
+print("Examine the plots and check that they look good!")
 ```
 
 ## Tests for Energy
