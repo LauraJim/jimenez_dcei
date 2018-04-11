@@ -4,13 +4,26 @@
 # and the environmental spaces (in a 2-dimensional case).
 
 # ARGUMENTS:
-# 
+# back --- csv file that contains the climatic background for the species,
+#          the first two columns must contain the lon,lat coordinates and
+#          the rest of the columns the measurements of the environmental
+#          variables to be considered in the analysis
+# occ.sp --- csv file with occurrence points, first two columns contain the
+#            geographical coordinates and the remaining columns are
+#            the environmental combinations
+# tolran --- csv file with tolerance limits for each environmental variable,
+#            must contain two columns for each variable (first column is the
+#            lower limit and second column the upper limit)
+# sp.col --- color name to be used for the occurrence points
+
 # OUTPUT:
+# A plot with two panels. The panel on the left will show the data in geographical
+# space and the panel on the right will show the data in the environmental space.
 
 # NOTES:
 
 # CODE:
-plotdata <- function(back,occ.sp,tol.ran,sp.col,...)
+plotdata <- function(back,occ.sp,tolran,sp.col)
 {
   par(mfrow=c(1,2))
   
