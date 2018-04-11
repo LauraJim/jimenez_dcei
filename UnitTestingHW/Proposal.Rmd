@@ -4,8 +4,6 @@ author: "Laura Jiménez"
 date: "April, 2018"
 output: html_document
 fontsize: 11pt
-#bibliography: .bib
-#csl: Science.csl
 ---
 
 <!--- Chunk for calling any extra code needed in this document such as libraries, functions or data --->
@@ -20,17 +18,17 @@ source("plotdata.R")
 
 ## The problem
 
-  I address the problem of how to estimate the hypothetical fundamental niche of a species from presence data. I do this by:  
+  My current research focuses on the problem of estimating the hypothetical fundamental niche of a species from presence data. The method that I'm developing estimates a niche by:  
 1. Defining an environmental space in which each axis represents a climatic variable. In this space we can plot the existing environmental conditions from the geographic region of interest and use them mainly for interpretating the results.  
 2. Using georeferenced occurrences of the species and its corresponding environmental conditions as the primary data, and climatic tolerance ranges from physiological experiments as _a priori_ information.  
-3. Postulating a simple shape for the niche of a species (Hutchinson's fundamental niche). I use a multivariate normal model to represent the fundamental niche, so that the parameters of interest are a vector of means, mu, and a precision matrix, A (which is defined as the inverse of the covariance matrix).  
-4. Providing a probabilistic (i.e. Bayesian) statement of the problem and the posterior distribution for estimating the parameters of fundamental niches.  
+3. Postulating a simple shape for the niche of a species (Hutchinson's fundamental niche). I use a multivariate normal model to represent the fundamental niche, so that the parameters of interest are a vector of means, $\mu$, and a precision matrix, $A$ (which is defined as the inverse of the covariance matrix).  
+4. Providing a probabilistic (i.e. Bayesian) statement of the problem and the posterior distribution for the parameters that define the fundamental niche.  
 
 ## Purpose and end products of the project
 
-  The ultimate goal of the final project will be to create an R package to perform all the calculations needed to apply this method of niche estimation and to analyze the results.
-  The R package will contain all the functions that the users will need to apply the model to their data, to produce visualizations of their data and the results of the niche estimation, and to adapt the model to different variations in the data.
-  The second product of this final project will be a manual that contains a description of the functions and data included in the package, together with some examples that explain how to use them.
+  The ultimate goal of the final project will be to create an R package to perform all the calculations needed to apply this method of niche estimation and to analyze the results.  
+  The R package will contain all the functions that the users will need to apply the model to their data, to produce visualizations of their data and the results of the niche estimation, and to adapt the model to different variations in the data.  
+  The second product of this final project will be a manual that contains a description of the functions and datasets included in the package, together with some examples that explain how to use them.
 
 ## A Bayesian method for niche estimation
 
@@ -59,7 +57,15 @@ source("Energy.R")
 Energy
 ```
 
-  When working under a Bayesian framework, the posterior distribution is the objective function of the analysis since it comprises all the information about the parameters of interests, those that describe the fundamental niche ($\mu$ and $A$).
+  When working under a Bayesian framework, the posterior distribution is the objective function of the analysis since it comprises all the information about the parameters of interest.
   I use an MCMC algorithm called "t-walk" (which will be described in detail in the final project) to generate simulations from the posterior. The set of draws provides posterior values of the mean, $\mu$, and the precision matrix, $A$, which can be used to construct ellipsoids and to derive metrics reflecting the uncertainty in the estimated parameters.
-  There is an R package that contains the t-walk algorithm, it is called "Rtwalk". I will use the function "Runtawlk" from this package to simulate from the posterior. In order to to that I have to define three main functions: Supp which checks that a new value in the Markov chain is valid, Initth which produces values from the _a priori_ distributions, and Energy which containd the posterior. I already defined and tested these functions as part of the assignement.  
-  After simulating from the posterior, I need another set of functions to analyze and display the results. As an example, I defined the function "PlotIterations.R" which takes the output of the function "Runtwalk" and plots the resulting ellipses in the environmental space.
+  There is an R package that contains functions for running the t-walk algorithm, it is called "Rtwalk". I will use the function "Runtawlk" from this package to get simulations from the posterior. In order to do that, I need to define three main functions: Supp which checks that a new value in the Markov chain is valid, Initth which produces values from the _a priori_ distributions, and Energy which contains the posterior. I already defined and tested these functions as part of the assignement and, to illustrate, here is how I will use them:  
+  <!--- Chunk for showing how the functions Supp, Initth and Energy will be used --->
+```{r runMCMC, eval=F}
+library(Rtwalk)
+info<-Runtwalk(Tr=10000,dim=5,Obj=Energy,Supp=Supp,x0=Initth(),xp0=Initth())
+}
+```
+
+  After simulating from the posterior, I will need another set of functions to analyze and display the results. As an example, I defined the function "PlotIterations.R" which takes the output of the function "Runtwalk" and plots the resulting ellipses in the environmental space.  
+  In summary, as part of my research project, I am developing a model for niche estimation. Using this model to estimate niches involves a series of complex calculations that can be made in R. The visualization of the data and the results form the estimation requires as well of special functions. Up to know, I have the code for most of the functions needed to apply the model. As part of the final project of the class, I will work on making this functions as modular and reproducible as possible because as my research project advances, I will need to addapt them and reuse them. Once I have the final version of the model, it will then be easy to adapt the R package that I will develop for this class and get a version that I could share with people interested on estimating niches.
