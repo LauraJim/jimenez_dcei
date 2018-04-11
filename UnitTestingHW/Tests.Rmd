@@ -25,7 +25,7 @@ We need to test three different cases:
 1. mu belongs to the given ranges and A is a positive matrix, so that the output must be TRUE  
 ```{r Supp_test1, echo=T, cache=T}
 # read the file that contains the climatic background points
-env <- read.csv("VarsCrdsBackground.csv",header=T) ## provide a url instead!!
+env <- read.csv("Background.csv",header=T) ## provide a url instead!!
 # only keep the columng that correspond to climatic data
 Et <- as.matrix(env[ , c(6,7)])
 # notice that every pair of element in mu.lim correspond to the range of each variable in the multivariate space
