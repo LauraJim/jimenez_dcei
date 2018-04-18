@@ -4,24 +4,33 @@
 # precision matrix (A) of a multivariate normal distribution belong to
 # to the support of the objective function (a posterior distribution).
 
+#***DAN: the above is tough to understand, but I think it is becauseI don't know the scientific context well enough
+
 # ARGUMENTS: see NOTES
 # th --- must be a numeric vector of length = lenght(mu) + (ncol(A)*(ncol(A)+1)/2)
 # for example: in case of a bivariate normal distribution, length(mu)=2 and ncol(A)=3
 # then length(th) = 2 + (2*3)/2 = 5 (degrees of freedom)
 
+#***DAN: very clear!
+
 # OUTPUT: see NOTES
 # TRUE --- if valid values of mu and A are contained in the vector th
 # FALSE --- if one or both parameters are out of the support of the objective function
+
+#***DAN: very clear!
 
 # NOTES:
 # 1) Since this function is later used by the main function from the t-walk package,
 # it can not include more arguments or have a different kind of output, instead,
 # we fix the variables mu, A and detA as global variables when we call this function
 # so we can use them later in the main code.
+#***DAN: be careful with that! globals are dangerous! you might consider forking the t-walk package and making modifications to it - sometimes that's the easiest way!
 # 2) Variables mu.lim and Et must be defined before using this function.
 # 3) In order to make this function work for any number of dimensions, we
 # must have an auxiliar variable that this function can use to split the
 # entries of th in the right way.
+
+#***DAN: overall this is a great function spec!
 
 # CODE:
 Supp <- function(th)

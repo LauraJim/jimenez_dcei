@@ -1,10 +1,15 @@
 ---
 title: "Final Project Proposal"
-author: "Laura Jiménez"
+author: "Laura Jimenez"
 date: "April, 2018"
 output: html_document
 fontsize: 11pt
 ---
+
+<!--***DAN: this project is obviously suitable for a final project in this course and goes way beyond what would be needed to get a good grade.
+I am not saying to cut it back, since I can see this is feeding into your thesis, so has a purpose other than the course (which is what we always hoped would happen with every student). I am just letting you know if you accomplish what you propose here you will have done plenty for a very good grade.-->
+
+<!--***DAN: I have put a few comments below, but these are limited because I do not always have the background to comment on the science.-->
 
 <!--- Chunk for calling any extra code needed in this document such as libraries, functions or data --->
 ```{r extra-code,include=FALSE}
@@ -29,6 +34,10 @@ source("plotdata.R")
   The ultimate goal of the final project will be to create an R package to perform all the calculations needed to apply this method of niche estimation and to analyze the results.  
   The R package will contain all the functions that the users will need to apply the model to their data, to produce visualizations of their data and the results of the niche estimation, and to adapt the model to different variations in the data.  
   The second product of this final project will be a manual that contains a description of the functions and datasets included in the package, together with some examples that explain how to use them.
+
+<!--***DAN: For the manual, you may consider the "vignette" functionality that packages have (this is a natural way to make a manual such as you describe). See here this guide to packages, which includes a section on vignettes in the table of contents: http://r-pkgs.had.co.nz/-->
+
+<!--***DAN: since you are doing a package you will want to put your unit tests into the package framework, using, say, the testthat package. See the same link listed in my previous comment for a written guide to parallel what Terry taught you.-->
 
 ## A Bayesian method for niche estimation
 

@@ -1,14 +1,32 @@
 ---
 title: "Tests for the functions used in the final project"
-author: "Laura Jiménez"
+author: "Laura Jim?nez"
 date: "March 2018"
 output: html_document
 fontsize: 11pt
 ---
+
+<!--***DAN: To find my comments search for ***DAN in all files-->
+
+<!--***DAN: Excellent use of git - lots of commits, sensible messages, and halfway tag!-->
+
+<!--***DAN: You had function specs (with no guts) and tests at "halfway" so that's great!-->
+
+<!--***DAN: Tests.Rmd knitted on the first try, and so did your proposal, great!-->
+
+<!--***DAN: Your function specs are very precise and well written, and your tests are
+explained in great detail and seem quite extensive! This should hopefully make a 
+good research resource for you! I am glad to see you incorporating all the principles
+wholeheartedly! I have not checked every line of your functions or tests because I do
+not have the necessary background to do so, but I can see you have applied the 
+principles of unit testing very well. Since I understand you are writing an extensive 
+software suite for your thesis, tests like this should stand you in good stead - 
+tests are more important the more complex the software gets!-->
+
 ## General notes
 
 All the functions will be tested assuming that we are working with an environmental space of two dimensions. These functions can be modified easylt to work with higher-dimensional spaces (except for the ones used to display visualizations which only will work for two dimensions).
-All the functions consider that mu (vector of means, or ellipses centroid) and A (precisión matrix, or inverse of the covariance matrix) are the parameters that define the multivariate normal distribution associated with the fundamental niche of the species. These two variables are global variables in the main program, so we need to be careful when using them in the functions.
+All the functions consider that mu (vector of means, or ellipses centroid) and A (precisi?n matrix, or inverse of the covariance matrix) are the parameters that define the multivariate normal distribution associated with the fundamental niche of the species. These two variables are global variables in the main program, so we need to be careful when using them in the functions.
 
 ## Tests for Supp
 
